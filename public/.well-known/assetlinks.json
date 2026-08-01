@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.pierrenrt.synapse",
+        "sha256_cert_fingerprints": ["98:EC:F6:0F:D8:47:D3:7F:93:65:04:C6:92:2D:FD:56:68:44:A9:20:2A:37:0F:90:07:9C:A2:68:FB:B2:AE:0D"]
+      }
+    }]
