@@ -139,6 +139,7 @@ export default function App() {
           hints={profile.hints}
           onUseHint={useHint}
           onWatchAd={() => setShowRewardedAd(true)}
+          adOpen={showRewardedAd}
           onFinish={(res) => handleFinish(activeType, res)}
           onBack={backHome}
         />
@@ -342,7 +343,7 @@ function StatPill({ icon: Icon, value, label, color }) {
   );
 }
 
-function PlayScreen({ type, data, lang, hints, onUseHint, onWatchAd, onFinish, onBack }) {
+function PlayScreen({ type, data, lang, hints, onUseHint, onWatchAd, adOpen, onFinish, onBack }) {
   const meta = TYPE_META[type];
   const Icon = meta.icon;
   return (
@@ -356,7 +357,7 @@ function PlayScreen({ type, data, lang, hints, onUseHint, onWatchAd, onFinish, o
       </div>
 
       {type === "memory" && <MemoryGame data={data} lang={lang} onFinish={onFinish} />}
-      {type === "calc" && <CalcGame data={data} lang={lang} onFinish={onFinish} hints={hints} onUseHint={onUseHint} onWatchAd={onWatchAd} />}
+      {type === "calc" && <CalcGame data={data} lang={lang} onFinish={onFinish} hints={hints} onUseHint={onUseHint} onWatchAd={onWatchAd} paused={adOpen} />}
       {type === "logic" && <LogicGame data={data} lang={lang} onFinish={onFinish} hints={hints} onUseHint={onUseHint} onWatchAd={onWatchAd} />}
       {type === "observation" && <ObservationGame data={data} lang={lang} onFinish={onFinish} />}
       {type === "concentration" && <ConcentrationGame data={data} lang={lang} onFinish={onFinish} />}
