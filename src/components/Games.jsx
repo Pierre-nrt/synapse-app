@@ -100,7 +100,7 @@ export function MemoryGame({ data, lang, onFinish }) {
    ============================================================ */
 const CALC_TIME_MS = 8000;
 
-export function CalcGame({ data, lang, onFinish, hints, onUseHint, onWatchAd }) {
+export function CalcGame({ data, lang, onFinish, hints, onUseHint, onWatchAd, paused }) {
   const [index, setIndex] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [inputVal, setInputVal] = useState("");
@@ -108,31 +108,39 @@ export function CalcGame({ data, lang, onFinish, hints, onUseHint, onWatchAd }) 
   const [revealed, setRevealed] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const startRef = useRef(Date.now());
-  const ivRef = useRef(null);
   const lockRef = useRef(false);
 
+  // Nouvelle question : on réinitialise tout (une seule fois par question)
   useEffect(() => {
     setInputVal("");
     setRevealed(false);
     setFeedback(null);
     lockRef.current = false;
     setTimeLeft(CALC_TIME_MS);
-    const t0 = Date.now();
-    ivRef.current = setInterval(() => {
-      const remain = CALC_TIME_MS - (Date.now() - t0);
-      if (remain <= 0) {
-        clearInterval(ivRef.current);
-        submit(true);
-      } else setTimeLeft(remain);
-    }, 100);
-    return () => clearInterval(ivRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
+
+  // Minuteur : ne tourne que si la question n'est pas déjà répondue et que
+  // rien n'est en pause (ex: une publicité récompensée est affichée par-dessus).
+  useEffect(() => {
+    if (paused || feedback) return;
+    const iv = setInterval(() => {
+      setTimeLeft((prev) => {
+        const next = prev - 100;
+        if (next <= 0) {
+          clearInterval(iv);
+          submit(true);
+          return 0;
+        }
+        return next;
+      });
+    }, 100);
+    return () => clearInterval(iv);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, paused, feedback]);
 
   function submit(timeout) {
     if (lockRef.current) return;
     lockRef.current = true;
-    clearInterval(ivRef.current);
     const q = data.questions[index];
     const val = parseInt(inputVal, 10);
     const ok = !timeout && val === q.answer;
