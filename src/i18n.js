@@ -106,6 +106,10 @@ const DICT = {
   badge_firstDay: { fr: "Premier jour complet", en: "First full day", ht: "Premye jou konplè" },
 
   emptyToday: { fr: "Aucun défi commencé aujourd'hui. Choisis-en un !", en: "No challenge started today. Pick one!", ht: "Pa gen defi ki kòmanse jodi a. Chwazi youn!" },
+
+  about: { fr: "À propos", en: "About", ht: "Konsènan" },
+  howItWorks: { fr: "Comment ça marche", en: "How it works", ht: "Kijan sa mache" },
+  privacyPolicy: { fr: "Politique de confidentialité", en: "Privacy policy", ht: "Politik konfidansyalite" },
 };
 
 export function t(key, lang) {

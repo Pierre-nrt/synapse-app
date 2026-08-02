@@ -618,6 +618,13 @@ function SettingsScreen({ profile, lang, accent, onSetLang, onSetTheme, onToggle
           </div>
         </div>
       )}
+
+      {/* À propos */}
+      <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: 6, fontSize: "0.8rem" }}>
+        <a href="/a-propos.html" style={{ color: "#6a6580" }}>{t("about", lang)}</a>
+        <a href="/comment-ca-marche.html" style={{ color: "#6a6580" }}>{t("howItWorks", lang)}</a>
+        <a href="/privacy.html" style={{ color: "#6a6580" }}>{t("privacyPolicy", lang)}</a>
+      </div>
     </div>
   );
 }
