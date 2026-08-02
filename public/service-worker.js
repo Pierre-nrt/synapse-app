@@ -1,4 +1,4 @@
-const CACHE_NAME = "synapse-v1";
+const CACHE_NAME = "synapse-v2";
 const APP_SHELL = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -15,9 +15,27 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Cache-first pour les fichiers de l'app, réseau en repli pour le reste
+// Pages (navigation) : toujours essayer le réseau en premier, pour ne jamais
+// servir une version périmée après une mise à jour. Repli sur le cache
+// uniquement si hors ligne.
+// Autres fichiers (JS, CSS, icônes) : cache d'abord, c'est sans risque car
+// leurs noms changent à chaque nouvelle version.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("/index.html")))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
