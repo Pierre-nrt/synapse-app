@@ -100,7 +100,7 @@ export function MemoryGame({ data, lang, onFinish }) {
    ============================================================ */
 const CALC_TIME_MS = 8000;
 
-export function CalcGame({ data, lang, onFinish, hints, onUseHint }) {
+export function CalcGame({ data, lang, onFinish, hints, onUseHint, onWatchAd }) {
   const [index, setIndex] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [inputVal, setInputVal] = useState("");
@@ -200,23 +200,27 @@ export function CalcGame({ data, lang, onFinish, hints, onUseHint }) {
         <button
           onClick={() => {
             if (revealed || feedback) return;
-            if (onUseHint()) setRevealed(true);
+            if (hints > 0) {
+              if (onUseHint()) setRevealed(true);
+            } else if (onWatchAd) {
+              onWatchAd();
+            }
           }}
-          disabled={hints <= 0 || revealed || !!feedback}
-          title={t("useHint", lang)}
+          disabled={revealed || !!feedback}
+          title={hints > 0 ? t("useHint", lang) : t("watchAdHint", lang)}
           style={{
             background: "transparent",
             border: "1px solid #33304a",
             borderRadius: 10,
             padding: "0.6rem 0.8rem",
-            color: hints > 0 ? "#E8C468" : "#5c5870",
-            cursor: hints > 0 ? "pointer" : "default",
+            color: "#E8C468",
+            cursor: revealed || feedback ? "default" : "pointer",
             display: "flex",
             alignItems: "center",
             gap: 6,
           }}
         >
-          <Lightbulb size={16} /> {hints}
+          <Lightbulb size={16} /> {hints > 0 ? hints : "▶"}
         </button>
       </div>
     </div>
@@ -226,7 +230,7 @@ export function CalcGame({ data, lang, onFinish, hints, onUseHint }) {
 /* ============================================================
    LOGIQUE
    ============================================================ */
-export function LogicGame({ data, lang, onFinish, hints, onUseHint }) {
+export function LogicGame({ data, lang, onFinish, hints, onUseHint, onWatchAd }) {
   const [index, setIndex] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -260,6 +264,10 @@ export function LogicGame({ data, lang, onFinish, hints, onUseHint }) {
 
   function useHintNow() {
     if (eliminated.length > 0 || selected !== null) return;
+    if (hints <= 0) {
+      if (onWatchAd) onWatchAd();
+      return;
+    }
     if (!onUseHint()) return;
     const wrongIdx = q.options.map((_, i) => i).filter((i) => i !== q.correctIndex);
     const toEliminate = wrongIdx.sort(() => 0.5 - Math.random()).slice(0, 2);
@@ -336,21 +344,21 @@ export function LogicGame({ data, lang, onFinish, hints, onUseHint }) {
       </div>
       <button
         onClick={useHintNow}
-        disabled={hints <= 0 || eliminated.length > 0 || selected !== null}
+        disabled={eliminated.length > 0 || selected !== null}
         style={{
           marginTop: 18,
           background: "transparent",
           border: "1px solid #33304a",
           borderRadius: 10,
           padding: "0.5rem 0.9rem",
-          color: hints > 0 ? "#E8C468" : "#5c5870",
-          cursor: hints > 0 ? "pointer" : "default",
+          color: "#E8C468",
+          cursor: eliminated.length > 0 || selected !== null ? "default" : "pointer",
           display: "inline-flex",
           alignItems: "center",
           gap: 6,
         }}
       >
-        <Lightbulb size={15} /> {t("useHint", lang)} ({hints})
+        <Lightbulb size={15} /> {hints > 0 ? `${t("useHint", lang)} (${hints})` : t("watchAdHint", lang)}
       </button>
     </div>
   );
